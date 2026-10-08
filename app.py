@@ -49,7 +49,7 @@ with tab2.form('Frequência natural e amortecimento'):
 
 with tab3.form('Polo complexo'):
     sigma = st.number_input(r'Parte real $\sigma$:', key='sigma', required=True)
-    omega_d = st.number_input(r'Parte complexa $\omega_d:', key='omega_d', required=True)
+    omega_d = st.number_input(r'Parte imaginária $\omega_d$:', key='omega_d', required=True)
 
     # texto:
     st.latex(r'p_i = \sigma \pm j \omega_d')
@@ -96,7 +96,7 @@ g_den_str = st.session_state['TF']['g_den_str']
 h_num_str = st.session_state['TF']['h_num_str']
 h_den_str = st.session_state['TF']['h_den_str']
 
-if g_den_str == '':
+if not g_den_str:
     st.error('**Por favor defina funções de transferência da planta!**')
     st.stop()
 
