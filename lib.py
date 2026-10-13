@@ -39,8 +39,7 @@ def get_ft(g_num_str, g_den_str, h_num_str, h_den_str):
     numerador = sp.Poly.from_list(h_num_str.split(','), gens=s).as_expr()
     denominador = sp.Poly.from_list(h_den_str.split(','), gens=s).as_expr()
     H = TransferFunction(numerador, denominador, s)
-    # return Series(G, H).doit()  # fixme: era para ser em feedback
-    return Feedback(G, H, sign=-1).doit()
+    return Series(G, H).doit()
 
 
 def calcular_zc(ft, ponto_si, polos, zeros, ganho, controller):
