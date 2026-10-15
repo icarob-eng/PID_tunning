@@ -510,8 +510,8 @@ elif sp.simplify(sp.fraction(sp.together(lib._expressao_s(Gc)))[1]) in (1, s):
 itens = [("Ganho $K_c$", num(Kc)), (r"Ângulo $\varphi$", f"{num(phi_ctrl)}°")]
 itens += [(n, num(v)) for n, v in (("$K_p$", Kp), ("$K_i$", Ki), ("$K_d$", Kd))
           if v is not None]
-for coluna, (rotulo, valor) in zip(st.columns(len(itens)), itens):
-    coluna.metric(rotulo, valor)
+st.markdown('**Parametros do controlador:**')
+st.table(itens, border='horizontal')
 
 # --- singularidades ---
 zeros_ctrl = zero_txt(resultado["zeros"])
@@ -526,7 +526,8 @@ elif resultado["polos"]:
 else:
     polos_ctrl = "nenhum"
 
-st.markdown(f"**Zeros:** ${zeros_ctrl or 'nenhum'}$ &nbsp;|&nbsp; **Polos:** {polos_ctrl}")
+st.markdown(f"**Zeros:** ${zeros_ctrl or 'nenhum'}$")
+st.markdown(f"**Polos:** {polos_ctrl}")
 
 if tipo == "P":
     st.warning(
