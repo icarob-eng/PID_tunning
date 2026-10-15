@@ -204,7 +204,7 @@ def get_ft(g_num_str, g_den_str, h_num_str, h_den_str):
     denominador = _polinomio_de_coeficientes(h_den_str)
     H = TransferFunction(numerador, denominador, s)
 
-    return Series(G, H).doit()
+    return Series(G, H).doit(), G, H
 
 
 def ganho_planta(ft):

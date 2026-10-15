@@ -307,11 +307,17 @@ with st.expander("2. Definir a planta", expanded=True):
         st.error("Preencha todos os coeficientes da planta.")
         st.stop()
 
-    ok, ft = tentar(lambda: get_ft(g_num, g_den, h_num, h_den), "Planta inválida: ")
+    ok, (ft, G, H) = tentar(lambda: get_ft(g_num, g_den, h_num, h_den), "Planta inválida: ")
     if not ok:
         st.error(ft)
         st.stop()
 
+st.markdown('**Funções de transferência da planta:**')
+col1, col2 = st.columns([1, 1])
+with col1:
+    st.latex(f'G(s)={ft_para_latex(G.to_expr())}')
+with col2:
+    st.latex(f'H(s)={ft_para_latex(H.to_expr())}')
 
 # --- 4. Propriedades de G(s)H(s) ---
 
@@ -326,8 +332,10 @@ with col1:
         st.latex(f"G(s)H(s)={ft_para_latex(ft.doit().to_expr())}")
         st.markdown("**Zeros**")
         st.markdown(f"${lista_para_latex(zeros)}$" if zeros else "Não há zeros.")
+        st.divider()
         st.markdown("**Polos**")
         st.markdown(f"${lista_para_latex(polos)}$" if polos else "Não há polos.")
+        st.divider()
         st.markdown(f"**Ganho** (razão dos coeficientes líderes): $K = {num(ganho)}$")
 
         # plano-s
@@ -351,17 +359,15 @@ with col1:
 
 with col2:
     with st.expander("4. Passos 11 e 12 do LGR", expanded=True):
-        st.markdown(
-            "**Passo 11 — distâncias e produtos** "
-            r"(condição de módulo: $1+K\prod_j(s_i-z_j)/\prod_k(s_i-p_k)=0$)."
-        )
+        st.subheader("**Passo 11 — distâncias e produtos**")
+        st.markdown(r"(condição de módulo: $1+K\prod_j(s_i-z_j)/\prod_k(s_i-p_k)=0$).")
         # zeros: índice j, polos: índice k
         for rotulo, simbolo, indice, linhas in (("zeros", "z", "j", tbl["zeros"]),
                                                 ("polos", "p", "k", tbl["polos"])):
             if not linhas:
-                st.markdown(f"Não há {rotulo}.")
+                st.markdown(f"**Não há {rotulo}.**")
                 continue
-            st.markdown(f"*{rotulo.capitalize()}*")
+            st.markdown(f"**{rotulo.capitalize()}**")
             for i, linha in enumerate(linhas):
                 pos = complex(linha["posicao"])
                 sinal = "-" if pos.imag < 0 else "+"
@@ -372,14 +378,15 @@ with col2:
                     f"$|s_i - {simbolo}_{indice}| = {num(linha['modulo'])}$, "
                     f"$\\angle(s_i - {simbolo}_{indice}) = {num(linha['fase'])}^\\circ$"
                 )
+            st.divider()
 
         st.latex(rf"\prod_j |s_i - z_j| = {num(tbl['produto_zeros'])}")
         st.latex(rf"\prod_k |s_i - p_k| = {num(tbl['produto_polos'])}")
 
-        st.markdown("**Passo 12 — soma das fases**")
+        st.subheader("Passo 12 — soma das fases")
         st.latex(r"\sum_j \angle(s_i - z_j) - \sum_k \angle(s_i - p_k)")
         st.latex(f"= {num(tbl['angulo_ponto'])}^\\circ")
-        st.markdown("**Déficit de ângulo do controlador**")
+        st.markdown("**Déficit de ângulo do controlador:**")
         st.latex(
             rf"\varphi = 180^\circ - \left({num(tbl['angulo_ponto'])}^\circ\right)"
             rf" = {num(tbl['phi'])}^\circ"
@@ -420,7 +427,7 @@ with st.expander("5. Síntese do controlador", expanded=True):
             for i in range(int(n_fixos))
         ]
 
-    st.markdown(f"**Controlador: {control_type}**")
+    st.container(border=True).markdown(f"**Controlador: {control_type}**")
 
     # --- cálculo ---
     def _calcular():
