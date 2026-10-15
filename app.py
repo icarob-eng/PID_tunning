@@ -134,7 +134,7 @@ def ft_para_latex(expr, var=s):
 
 def coeficientes_texto(coef, casas=CASAS):
     """Coeficientes (numerador, denominador) como texto."""
-    return tuple(" ".join(num(v, casas) for v in coef[k])
+    return tuple(", ".join(num(v, casas) for v in coef[k])
                  for k in ("numerador", "denominador"))
 
 
@@ -216,7 +216,7 @@ with st.expander("1. Definir parâmetros de desempenho", expanded=True):
                                   value=10.0, step=0.5, format="%.2f")
             tol = c2.radio("Tolerância [%]:", [2, 5], horizontal=True)
             tau = st.number_input("Tempo de acomodação [s]:", min_value=0.0,
-                                  value=1.0, step=0.1, format="%.3f")
+                                  value=1.0, step=0.5, format="%.3f")
 
             st.latex(
                 r"\xi=\sqrt{\frac{\ln^2(M_p/100)}{\pi^2+\ln^2(M_p/100)}}"
@@ -237,7 +237,7 @@ with st.expander("1. Definir parâmetros de desempenho", expanded=True):
             omega_n = c1.number_input(r"Frequência natural $\omega_n$ [rad/s]:",
                                       min_value=0.0, value=4.0, step=0.1, format="%.3f")
             xi = c2.number_input(r"Amortecimento $\xi$:", min_value=0.0, max_value=0.999,
-                                 value=0.5, step=0.01, format="%.3f")
+                                 value=0.5, step=0.1, format="%.3f")
             st.latex(r"\omega_d=\omega_n\sqrt{1-\xi^2},\quad \sigma=\xi\omega_n")
             if st.form_submit_button("Confirmar"):
                 ok, res = tentar(lambda: pole_from_freq(omega_n, xi), "Polo inválido: ")
@@ -537,14 +537,12 @@ if tipo == "P":
     )
 
 # --- função de transferência ---
-cabecalho = st.columns([6, 1])
-cabecalho[0].markdown("**Função de transferência**")
-with cabecalho[1]:
-    with st.popover("Coeficientes"):
-        coef = resultado["coeficientes"]
-        cn, cd = coeficientes_texto(coef)
-        st.markdown(f"Numerador: ${cn}$")
-        st.markdown(f"Denominador: ${cd}$")
+st.markdown("**Função de transferência:**")
+with st.expander("Coeficientes"):
+    coef = resultado["coeficientes"]
+    cn, cd = coeficientes_texto(coef)
+    st.markdown(f"Numerador: ${cn}$")
+    st.markdown(f"Denominador: ${cd}$")
 
 with st.container(key="ft"):
     st.markdown(f"$$G_c(s) = {ft_para_latex(Gc)}$$")
@@ -593,7 +591,7 @@ with st.expander("7. Discretização (cap. 5 — SisContr.pdf)"):
         format_func=lambda m: DESCRICAO_METODOS[m],
     )
     Ts = c2.number_input("Período de amostragem $T_s$ [s]:",
-                         min_value=0.0, value=0.1, step=0.01, format="%.4f")
+                         min_value=0.0, value=1.0, step=0.5, format="%.4f")
 
     st.markdown("Substituição aplicada:")
     st.latex(FORMULA_DISCRETIZACAO[metodo] + rf"\qquad\text{{com }}\; T_s = {Ts}")
@@ -610,8 +608,8 @@ with st.expander("7. Discretização (cap. 5 — SisContr.pdf)"):
             cols = st.columns(3)
             for coluna, titulo, expr in zip(
                 cols,
-                (r"Planta $G_d(z)$", r"Controlador $C_d(z)$",
-                 r"Malha aberta $T_d(z)$"),
+                (r"Planta $G_d(z)$:", r"Controlador $C_d(z)$:",
+                 r"Malha aberta $T_d(z)$:"),
                 (disc["planta_discreta"], disc["controlador_discreto"],
                  disc["sistema_aberto_discreto"]),
             ):
